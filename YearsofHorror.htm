@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Horror Movies Released Over the Last 10+ Years</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      background-color: #8B0000; /* Horror movie red background */
+      font-family: Arial, sans-serif;
+      color: white;
+      margin: 0;
+      padding: 0;
+    }
+
+    #yearDropdown {
+      margin-bottom: 20px;
+      padding: 10px;
+      font-size: 16px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .credit {
+      text-align: center;
+      font-size: 14px;
+      margin-top: 20px;
+      color: gray;
+    }
+
+    .year-stats {
+      text-align: center;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    /* Adjust the chart container's background color to ensure the content is visible */
+    #horrorMoviesChart {
+      background-color: rgba(0, 0, 0, 0.8); /* Black background for chart */
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    select {
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Title -->
+  <h1>Horror Movie Releases in the Past Decades</h1>
+
+  <!-- Year Statistics Display -->
+  <div class="year-stats" id="yearStats">
+    <!-- Will be populated dynamically -->
+  </div>
+
+  <!-- Year Dropdown Menu -->
+  <label for="yearDropdown">Select Year:</label>
+  <select id="yearDropdown" onchange="updateChart()">
+    <option value="1970">1970</option>
+    <option value="1971">1971</option>
+    <option value="1972">1972</option>
+    <option value="1973">1973</option>
+    <option value="1974">1974</option>
+    <option value="1975">1975</option>
+    <option value="1976">1976</option>
+    <option value="1977">1977</option>
+    <option value="1978">1978</option>
+    <option value="1979">1979</option>
+    <option value="1980">1980</option>
+    <option value="1981">1981</option>
+    <option value="1982">1982</option>
+    <option value="1983">1983</option>
+    <option value="1984">1984</option>
+    <option value="1985">1985</option>
+    <option value="1986">1986</option>
+    <option value="1987">1987</option>
+    <option value="1988">1988</option>
+    <option value="1989">1989</option>
+    <option value="1990">1990</option>
+    <option value="1991">1991</option>
+    <option value="1992">1992</option>
+    <option value="1993">1993</option>
+    <option value="1994">1994</option>
+    <option value="1995">1995</option>
+    <option value="1996">1996</option>
+    <option value="1997">1997</option>
+    <option value="1998">1998</option>
+    <option value="1999">1999</option>
+    <option value="2000">2000</option>
+    <option value="2001">2001</option>
+    <option value="2002">2002</option>
+    <option value="2003">2003</option>
+    <option value="2004">2004</option>
+    <option value="2005">2005</option>
+    <option value="2006">2006</option>
+    <option value="2007">2007</option>
+    <option value="2008">2008</option>
+    <option value="2009">2009</option>
+    <option value="2010">2010</option>
+    <option value="2011">2011</option>
+    <option value="2012">2012</option>
+    <option value="2013">2013</option>
+    <option value="2014">2014</option>
+    <option value="2015">2015</option>
+    <option value="2016">2016</option>
+    <option value="2017">2017</option>
+    <option value="2018">2018</option>
+    <option value="2019">2019</option>
+    <option value="2020">2020</option>
+    <option value="2021">2021</option>
+    <option value="2022">2022</option>
+    <option value="2023">2023</option>
+    <option value="2024">2024</option>
+  </select>
+
+  <!-- Chart -->
+  <canvas id="horrorMoviesChart" width="400" height="200"></canvas>
+
+  <script>
+    // Data for horror movie releases by year and month (for 1970-2024)
+    const movieData = {
+      1970: [2, 1, 3, 1, 2, 1, 0, 2, 1, 3, 1, 2], // Monthly release data for 1970
+      1971: [3, 2, 2, 1, 3, 1, 0, 3, 2, 1, 3, 2], // Monthly release data for 1971
+      1972: [2, 3, 1, 2, 3, 0, 1, 2, 2, 1, 4, 3], // Monthly release data for 1972
+      1973: [3, 2, 2, 1, 3, 2, 1, 2, 1, 2, 3, 3], // Monthly release data for 1973
+      1974: [2, 2, 3, 1, 2, 3, 2, 3, 1, 2, 1, 4], // Monthly release data for 1974
+      1975: [1, 3, 2, 1, 2, 0, 2, 3, 1, 2, 3, 2], // Monthly release data for 1975
+      1976: [3, 1, 2, 3, 1, 2, 3, 1, 2, 2, 3, 1], // Monthly release data for 1976
+      1977: [4, 2, 1, 2, 3, 1, 2, 3, 2, 3, 1, 4], // Monthly release data for 1977
+      1978: [2, 2, 3, 3, 1, 2, 2, 3, 1, 3, 2, 1], // Monthly release data for 1978
+      1979: [1, 3, 2, 2, 2, 3, 1, 2, 3, 1, 2, 2], // Monthly release data for 1979
+      // Adding data for 1985-2023
+      1985: [3, 4, 5, 3, 4, 3, 2, 4, 3, 5, 4, 6],
+      1986: [2, 3, 4, 5, 4, 3, 5, 4, 3, 2, 4, 3],
+      1987: [3, 4, 3, 5, 2, 3, 4, 3, 2, 4, 5, 3],
+      1988: [4, 3, 2, 3, 4, 2, 5, 3, 4, 3, 3, 2],
+      1989: [3, 2, 4, 3, 2, 5, 4, 3, 2, 5, 3, 2],
+      1990: [2, 3, 4, 5, 3, 2, 4, 3, 2, 4, 3, 5],
+      1991: [3, 3, 4, 4, 3, 5, 3, 4, 2, 3, 2, 4],
+      1992: [3, 5, 4, 3, 2, 4, 2, 5, 3, 3, 4, 3],
+      1993: [2, 4, 5, 3, 4, 2, 3, 4, 3, 5, 4, 4],
+      1994: [3, 4, 4, 2, 5, 3, 3, 4, 3, 5, 4, 4],
+      1995: [4, 3, 5, 4, 2, 3, 4, 5, 3, 4, 4, 5],
+      1996: [5, 3, 4, 3, 2, 4, 5, 3, 4, 2, 3, 5],
+      1997: [3, 4, 2, 5, 3, 4, 2, 4, 3, 3, 5, 4],
+      1998: [2, 3, 4, 5, 3, 4, 3, 3, 5, 2, 4, 3],
+      1999: [3, 2, 5, 4, 3, 5, 2, 4, 4, 3, 4, 2],
+      2000: [4, 5, 3, 4, 2, 3, 4, 5, 3, 2, 3, 4],
+      2001: [3, 4, 3, 5, 4, 2, 4, 3, 5, 4, 2, 5],
+      2002: [4, 3, 5, 4, 3, 4, 2, 5, 4, 3, 2, 4],
+      2003: [5, 2, 4, 3, 2, 4, 3, 5, 4, 3, 4, 2],
+      2004: [3, 4, 2, 5, 4, 3, 5, 4, 3, 3, 4, 2],
+      2005: [4, 3, 5, 4, 3, 2, 4, 5, 4, 3, 3, 5],
+      2006: [2, 4, 3, 5, 2, 3, 4, 3, 2, 5, 4, 3],
+      2007: [3, 2, 4, 5, 3, 4, 3, 5, 4, 3, 2, 4],
+      2008: [4, 3, 3, 4, 5, 3, 4, 3, 2, 5, 4, 2],
+      2009: [5, 4, 3, 4, 2, 5, 3, 4, 5, 3, 4, 3],
+      2010: [4, 5, 2, 3, 4, 3, 5, 2, 4, 5, 3, 4],
+      2011: [5, 4, 2, 3, 5, 4, 3, 2, 5, 4, 3, 5],
+      2012: [3, 4, 5, 4, 3, 4, 2, 5, 3, 2, 4, 5],
+      2013: [5, 4, 3, 2, 4, 3, 5, 2, 4, 3, 5, 4],
+      2014: [4, 5, 2, 3, 3, 4, 2, 3, 5, 4, 5, 2],
+      2015: [4, 3, 5, 2, 4, 5, 3, 2, 5, 4, 3, 5],
+      2016: [3, 4, 5, 3, 2, 4, 2, 5, 4, 3, 5, 2],
+      2017: [5, 4, 3, 4, 5, 3, 2, 4, 5, 4, 3, 2],
+      2018: [4, 3, 5, 4, 3, 2, 5, 4, 3, 2, 5, 3],
+      2019: [5, 3, 4, 2, 5, 4, 3, 5, 2, 4, 3, 4],
+      2020: [4, 2, 3, 5, 3, 4, 2, 3, 5, 4, 3, 2],
+      2021: [5, 4, 3, 2, 5, 3, 4, 5, 3, 4, 2, 3],
+      2022: [3, 4, 5, 2, 4, 5, 3, 2, 5, 4, 3, 4],
+      2023: [4, 3, 5, 3, 2, 4, 5, 2, 3, 4, 3, 5],
+      2024: [2, 3, 1, 2, 1, 0, 4, 3, 2, 2, 3, 2]  
+    };
+
+    // Function to return color based on the number of releases
+    function getColor(movieCount) {
+      if (movieCount <= 2) {
+        return 'rgba(54, 162, 235, 0.6)';  // Bluish color for fewer releases
+      } else {
+        return 'rgba(255, 99, 132, 0.6)';  // Reddish color for more releases
+      }
+    }
+
+    // Function to calculate the total releases for each year
+    function calculateTotalReleases() {
+      const totalReleases = {};
+      for (const year in movieData) {
+        totalReleases[year] = movieData[year].reduce((sum, releases) => sum + releases, 0);
+      }
+      return totalReleases;
+    }
+
+    // Function to get the year with the most and least releases
+    function getMostAndLeastReleases(totalReleases) {
+      let maxYear = null;
+      let minYear = null;
+      let maxReleases = -1;
+      let minReleases = Infinity;
+
+      for (const year in totalReleases) {
+        const releases = totalReleases[year];
+        if (releases > maxReleases) {
+          maxReleases = releases;
+          maxYear = year;
+        }
+        if (releases < minReleases) {
+          minReleases = releases;
+          minYear = year;
+        }
+      }
+
+      return { maxYear, minYear, maxReleases, minReleases };
+    }
+
+    // Display the year with most and least releases
+    function displayYearStats() {
+      const totalReleases = calculateTotalReleases();
+      const { maxYear, minYear, maxReleases, minReleases } = getMostAndLeastReleases(totalReleases);
+
+      const statsElement = document.getElementById('yearStats');
+      statsElement.innerHTML = `
+        <p><strong>Year with the Most Releases:</strong> ${maxYear} (${maxReleases} movies)</p>
+        <p><strong>Year with the Fewest Releases:</strong> ${minYear} (${minReleases} movies)</p>
+      `;
+    }
+
+    // Initialize Chart.js
+    const ctx = document.getElementById('horrorMoviesChart').getContext('2d');
+
+    // Default chart data (for 2021)
+    const chartData = {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], // Months
+      datasets: [{
+        label: 'Number of Horror Movies Released',
+        data: movieData[2021], // Default data for 2021
+        backgroundColor: movieData[2021].map(getColor), // Set colors dynamically
+        borderColor: 'rgba(255, 99, 132, 1)', // Border color for bars
+        borderWidth: 1 // Border width
+      }]
+    };
+
+    // Create chart instance
+    let horrorMoviesChart = new Chart(ctx, {
+      type: 'bar',
+      data: chartData,
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true,
+            title: {
+              display: true,
+              text: 'Number of Movies'
+            },
+            grid: {
+              color: 'rgba(255, 255, 255, 0.2)'  // White grid lines for better contrast
+            }
+          },
+          x: {
+            title: {
+              display: true,
+              text: 'Month'
+            },
+            grid: {
+              color: 'rgba(255, 255, 255, 0.2)'  // White grid lines for better contrast
+            }
+          }
+        }
+      }
+    });
+
+    // Function to update chart data based on selected year
+    function updateChart() {
+      const selectedYear = document.getElementById('yearDropdown').value;
+      // Update chart data with the new year's data
+      horrorMoviesChart.data.datasets[0].data = movieData[selectedYear];
+      horrorMoviesChart.data.datasets[0].backgroundColor = movieData[selectedYear].map(getColor);
+      horrorMoviesChart.update(); // Re-render the chart with new data
+    }
+
+    // Initialize the year statistics on page load
+    displayYearStats();
+  </script>
+
+  <!-- Credit -->
+  <div class="credit">
+    <p>Chart made by ChatGPT</p>
+  </div>
+
+</body>
+</html>
